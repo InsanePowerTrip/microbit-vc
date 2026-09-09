@@ -1,17 +1,11 @@
 //% color="#E67E22" icon="\uf130" block="Walkie Talkie"
 namespace walkieTalkie {
 
-    //% block="initialize walkie talkie"
+    //% block="initialize walkie talkie with sample rate %sampleRate Hz"
+    //% sampleRate.defl=8000
     //% shim=WalkieTalkie::init
-    export function init(): void {
+    export function init(sampleRate: number): void {
         return; 
-    }
-
-    //% block="set walkie talkie group to %group"
-    //% group.min=0 group.max=255 group.defl=1
-    //% shim=WalkieTalkie::setRadioGroup
-    export function setRadioGroup(group: number): void {
-        return;
     }
 
     //% block="start recording audio"
