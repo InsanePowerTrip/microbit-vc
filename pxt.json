@@ -1,0 +1,15 @@
+{
+    "name": "walkie-talkie",
+    "version": "0.0.1",
+    "description": "Custom C++ Walkie Talkie for micro:bit V2",
+    "files": [
+        "walkie.ts",
+        "walkie.cpp"
+    ],
+    "dependencies": {
+        "core": "*"
+    },
+    "disablesVariants": [
+        "mbdal" 
+    ]
+}
