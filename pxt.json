@@ -1,6 +1,6 @@
 {
     "name": "walkie-talkie",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Custom C++ Walkie Talkie for micro:bit V2",
     "files": [
         "walkie.ts",
