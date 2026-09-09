@@ -7,26 +7,29 @@ using namespace pxt;
 namespace WalkieTalkie {
     StreamRecording* recording = nullptr;
     SplitterChannel* channel = nullptr;
-    const int SAMPLE_RATE = 8000;          
-    const int BUFFER_LEN = SAMPLE_RATE * 3; 
+    int currentSampleRate = 8000; // Default fallback
 
-    //% block="Initialize Walkie Talkie"
-    void init() {
-        if (recording != nullptr) return;
+    //% block="Initialize Walkie Talkie with sample rate %sampleRate Hz"
+    //% sampleRate.defl=8000
+    void init(int sampleRate) {
+        // Clear old instances if initializing again with a different rate
+        if (recording != nullptr) {
+            delete recording;
+            recording = nullptr;
+        }
+
+        currentSampleRate = sampleRate;
         
+        // 3-second buffer calculation (Sample Rate * Seconds)
+        int bufferLen = currentSampleRate * 3; 
+
+        // Connect to internal microphone stream
         channel = uBit.audio.splitter->createChannel();
-        channel->requestSampleRate(SAMPLE_RATE);
-        recording = new StreamRecording(*channel, BUFFER_LEN);
+        channel->requestSampleRate(currentSampleRate);
+        recording = new StreamRecording(*channel, bufferLen);
 
-        // Turn on the micro:bit radio system safely
+        // Safely wake up the radio layer using default/existing settings
         uBit.radio.enable();
-    }
-
-    //% block="Set Walkie Talkie Group to %group"
-    //% group.min=0 group.max=255 group.defl=1
-    void setRadioGroup(int group) {
-        // Direct CODAL hardware override for the channel group
-        uBit.radio.setGroup(group);
     }
 
     //% block="Start Recording"
@@ -44,12 +47,14 @@ namespace WalkieTalkie {
 
         int bytesRemaining = recording->length();
         int offset = 0;
-        uint8_t packet[32]; 
+        uint8_t packet; // 32-byte hardware payload window
 
         while (bytesRemaining > 0) {
             int chunkSize = (bytesRemaining > 32) ? 32 : bytesRemaining;
             
             recording->read(packet, offset, chunkSize);
+            
+            // Transmits via whatever group was set globally in MakeCode [^1]
             uBit.radio.datagram.send(packet, chunkSize);
             
             offset += chunkSize;
